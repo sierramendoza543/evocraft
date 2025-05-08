@@ -15,7 +15,20 @@ import {
 } from 'recharts';
 import { useOrganismStore } from '@/store/useOrganismStore';
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    payload: {
+      generation: number;
+      score: number;
+      mutation: boolean;
+    };
+  }>;
+  label?: number;
+}
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     const score = payload[0].value;
     const hasMutation = payload[0].payload.mutation;

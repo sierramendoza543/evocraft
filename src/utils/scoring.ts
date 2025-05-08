@@ -3,7 +3,7 @@ import { Biome } from './biomes';
 
 interface EvolutionInput {
   traits: OrganismTraits;
-  biome: string;
+  biome: Biome;
   generation: number;
   mutation: boolean;
 }
@@ -13,19 +13,48 @@ interface EvolutionResult {
   adaptationScore: number;
   notes: string[];
   mutation?: {
-    trait: string;
+    trait: keyof OrganismTraits;
     oldValue: string;
     newValue: string;
   };
-  traitScores: Record<string, number>;
+  traitScores: Record<keyof OrganismTraits, number>;
 }
 
-type TraitValue = string;
 type CompatibilityLevel = 'Excellent' | 'Good' | 'Poor';
 
 type TraitCompatibility = {
-  [trait: string]: {
-    [biome in Biome]: {
+  covering: {
+    [B in Biome]: {
+      [value: string]: CompatibilityLevel;
+    };
+  };
+  metabolism: {
+    [B in Biome]: {
+      [value: string]: CompatibilityLevel;
+    };
+  };
+  locomotion: {
+    [B in Biome]: {
+      [value: string]: CompatibilityLevel;
+    };
+  };
+  reproduction: {
+    [B in Biome]: {
+      [value: string]: CompatibilityLevel;
+    };
+  };
+  behavior: {
+    [B in Biome]: {
+      [value: string]: CompatibilityLevel;
+    };
+  };
+  limbs: {
+    [B in Biome]: {
+      [value: string]: CompatibilityLevel;
+    };
+  };
+  senses: {
+    [B in Biome]: {
       [value: string]: CompatibilityLevel;
     };
   };
@@ -61,6 +90,18 @@ export const traitCompatibility: TraitCompatibility = {
     rainforest: { live: 'Good', eggs: 'Good' },
     desert: { live: 'Poor', eggs: 'Excellent' },
     ocean: { live: 'Poor', eggs: 'Excellent' }
+  },
+  limbs: {
+    tundra: { none: 'Poor', legs: 'Good', fins: 'Poor', wings: 'Good' },
+    rainforest: { none: 'Poor', legs: 'Good', fins: 'Poor', wings: 'Good' },
+    desert: { none: 'Poor', legs: 'Good', fins: 'Poor', wings: 'Good' },
+    ocean: { none: 'Poor', legs: 'Poor', fins: 'Good', wings: 'Poor' }
+  },
+  senses: {
+    tundra: { sight: 'Good', smell: 'Good', echolocation: 'Poor' },
+    rainforest: { sight: 'Good', smell: 'Good', echolocation: 'Good' },
+    desert: { sight: 'Good', smell: 'Good', echolocation: 'Poor' },
+    ocean: { sight: 'Good', smell: 'Good', echolocation: 'Good' }
   }
 };
 
@@ -232,9 +273,9 @@ export function calculateFitness(input: EvolutionInput): EvolutionResult {
   
   // Calculate base adaptation score from trait compatibility
   let adaptationScore = 0;
-  const traitScores: Record<string, number> = {};
+  const traitScores: Record<keyof OrganismTraits, number> = {} as Record<keyof OrganismTraits, number>;
   
-  Object.entries(traits).forEach(([trait, value]) => {
+  (Object.entries(traits) as [keyof OrganismTraits, string][]).forEach(([trait, value]) => {
     const compatibility = traitCompatibility[trait]?.[biome]?.[value] ?? "Unknown";
     const score = biomeTraitScores[biome][trait][value] || 50;
     traitScores[trait] = score;
@@ -264,7 +305,7 @@ export function calculateFitness(input: EvolutionInput): EvolutionResult {
   // Add mutation note if applicable
   let mutationResult = undefined;
   if (mutation) {
-    const traitKeys = Object.keys(traits);
+    const traitKeys = Object.keys(traits) as Array<keyof OrganismTraits>;
     const randomTrait = traitKeys[Math.floor(Math.random() * traitKeys.length)];
     const currentValue = traits[randomTrait];
     const possibleValues = Object.keys(traitCompatibility[randomTrait]?.[biome] ?? {});

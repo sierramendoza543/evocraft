@@ -90,7 +90,7 @@ export default function EvolutionEngine() {
       if (isSimulating && currentGeneration <= 5) {
         // Simulate mutation (10-15% chance)
         const mutation = Math.random() < 0.12; // 12% chance
-        let mutatedTraits = { ...traits };
+        const mutatedTraits = { ...traits };
         let mutationResult;
 
         if (mutation) {

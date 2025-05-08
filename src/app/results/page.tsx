@@ -12,7 +12,7 @@ import EvolutionSummary from '@/components/EvolutionSummary';
 
 export default function ResultsPage() {
   const router = useRouter();
-  const { generationResults, selectedBiome } = useOrganismStore();
+  const { generationResults } = useOrganismStore();
 
   useEffect(() => {
     // Redirect if no simulation has been run
