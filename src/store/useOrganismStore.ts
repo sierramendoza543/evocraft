@@ -19,14 +19,12 @@ export interface GenerationResult {
     oldValue: string;
     newValue: string;
   };
-  traitScores: {
-    [trait: string]: number;
-  };
+  traitScores: Record<keyof OrganismTraits, number>;
 }
 
 interface OrganismState {
   traits: OrganismTraits;
-  selectedBiome: Biome;
+  selectedBiome: Biome | null;
   generationResults: GenerationResult[];
   setTrait: (category: keyof OrganismTraits, value: string) => void;
   setBiome: (biome: Biome) => void;

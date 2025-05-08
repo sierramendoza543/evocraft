@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { useOrganismStore } from '@/store/useOrganismStore';
 import { Biome } from '@/utils/biomes';
+import { validateBiome, ValidationError, VALID_BIOMES } from '@/utils/validation';
+import { useState } from 'react';
 
 interface BiomeOption {
   id: Biome;
@@ -16,46 +18,69 @@ interface BiomeSelectorProps {
   onComplete?: () => void;
 }
 
-const biomes: BiomeOption[] = [
-  {
-    id: 'tundra',
-    name: 'Tundra',
-    description: 'A harsh, cold environment with limited resources and extreme temperatures.',
-    icon: '❄️',
-    challenges: ['Extreme cold', 'Limited food sources', 'Long winters'],
-  },
-  {
-    id: 'rainforest',
-    name: 'Rainforest',
-    description: 'A humid, biodiverse environment with intense competition and dense vegetation.',
-    icon: '🌴',
-    challenges: ['High humidity', 'Intense competition', 'Dense vegetation'],
-  },
-  {
-    id: 'desert',
-    name: 'Desert',
-    description: 'A hot, arid environment with scarce water and extreme heat.',
-    icon: '🏜️',
-    challenges: ['Water scarcity', 'Extreme heat', 'Limited shelter'],
-  },
-  {
-    id: 'ocean',
-    name: 'Ocean',
-    description: 'A vast aquatic environment with unique pressures like water pressure and salinity levels.',
-    icon: '🌊',
-    challenges: ['Water pressure', 'Salinity levels', 'Limited oxygen'],
-  },
-];
+const biomes: BiomeOption[] = VALID_BIOMES.map(biome => {
+  switch (biome) {
+    case 'tundra':
+      return {
+        id: biome,
+        name: 'Tundra',
+        description: 'A harsh, cold environment with limited resources and extreme temperatures.',
+        icon: '❄️',
+        challenges: ['Extreme cold', 'Limited food sources', 'Long winters'],
+      };
+    case 'rainforest':
+      return {
+        id: biome,
+        name: 'Rainforest',
+        description: 'A humid, biodiverse environment with intense competition and dense vegetation.',
+        icon: '🌴',
+        challenges: ['High humidity', 'Intense competition', 'Dense vegetation'],
+      };
+    case 'desert':
+      return {
+        id: biome,
+        name: 'Desert',
+        description: 'A hot, arid environment with scarce water and extreme heat.',
+        icon: '🏜️',
+        challenges: ['Water scarcity', 'Extreme heat', 'Limited shelter'],
+      };
+    case 'ocean':
+      return {
+        id: biome,
+        name: 'Ocean',
+        description: 'A vast aquatic environment with unique pressures like water pressure and salinity levels.',
+        icon: '🌊',
+        challenges: ['Water pressure', 'Salinity levels', 'Limited oxygen'],
+      };
+  }
+});
 
 export default function BiomeSelector({ onComplete }: BiomeSelectorProps) {
   const { selectedBiome, setBiome } = useOrganismStore();
+  const [error, setError] = useState<string | null>(null);
 
   const handleBiomeSelect = (biomeId: Biome) => {
-    setBiome(biomeId);
+    try {
+      validateBiome(biomeId);
+      setBiome(biomeId);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof ValidationError ? err.message : 'Invalid biome selection');
+    }
   };
 
   return (
     <div className="space-y-8">
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-500/20 border border-red-500 text-red-200 p-4 rounded-lg"
+        >
+          {error}
+        </motion.div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {biomes.map((biome) => (
           <motion.div
