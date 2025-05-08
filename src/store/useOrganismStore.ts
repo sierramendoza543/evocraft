@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { Biome } from '@/utils/biomes';
 
 export interface OrganismTraits {
   covering: string;
@@ -25,10 +26,10 @@ export interface GenerationResult {
 
 interface OrganismState {
   traits: OrganismTraits;
-  selectedBiome: string;
+  selectedBiome: Biome;
   generationResults: GenerationResult[];
   setTrait: (category: keyof OrganismTraits, value: string) => void;
-  setBiome: (biome: string) => void;
+  setBiome: (biome: Biome) => void;
   addGenerationResult: (result: GenerationResult) => void;
   resetTraits: () => void;
   resetSimulation: () => void;
@@ -44,7 +45,7 @@ export const useOrganismStore = create<OrganismState>((set) => ({
     senses: '',
     behavior: '',
   },
-  selectedBiome: '',
+  selectedBiome: null,
   generationResults: [],
   setTrait: (category, value) =>
     set((state) => ({
@@ -75,7 +76,7 @@ export const useOrganismStore = create<OrganismState>((set) => ({
     }),
   resetSimulation: () =>
     set({
-      selectedBiome: '',
+      selectedBiome: null,
       generationResults: [],
     }),
 })); 

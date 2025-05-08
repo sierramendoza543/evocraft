@@ -2,9 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { useOrganismStore } from '@/store/useOrganismStore';
+import { Biome } from '@/utils/biomes';
 
-interface Biome {
-  id: string;
+interface BiomeOption {
+  id: Biome;
   name: string;
   description: string;
   icon: string;
@@ -15,7 +16,7 @@ interface BiomeSelectorProps {
   onComplete?: () => void;
 }
 
-const biomes: Biome[] = [
+const biomes: BiomeOption[] = [
   {
     id: 'tundra',
     name: 'Tundra',
@@ -49,7 +50,7 @@ const biomes: Biome[] = [
 export default function BiomeSelector({ onComplete }: BiomeSelectorProps) {
   const { selectedBiome, setBiome } = useOrganismStore();
 
-  const handleBiomeSelect = (biomeId: string) => {
+  const handleBiomeSelect = (biomeId: Biome) => {
     setBiome(biomeId);
   };
 

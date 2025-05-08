@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useOrganismStore } from '@/store/useOrganismStore';
+import { useOrganismStore, OrganismTraits } from '@/store/useOrganismStore';
 import { calculateFitness } from '@/utils/scoring';
+import { Biome } from '@/utils/biomes';
 
 interface GenerationCardProps {
   generation: number;
@@ -13,9 +14,9 @@ interface GenerationCardProps {
     adaptationScore: number;
     notes: string[];
     mutation?: {
-      trait: string;
-      from: string;
-      to: string;
+      trait: keyof OrganismTraits;
+      oldValue: string;
+      newValue: string;
     };
   };
 }
@@ -49,7 +50,7 @@ function GenerationCard({ generation, result }: GenerationCardProps) {
         ))}
         {result.mutation && (
           <p className="text-blue-400">
-            Mutation occurred: {result.mutation.trait} changed from {result.mutation.from} to {result.mutation.to}
+            Mutation occurred: {String(result.mutation.trait)} changed from {result.mutation.oldValue} to {result.mutation.newValue}
           </p>
         )}
       </div>
@@ -79,15 +80,15 @@ export default function EvolutionEngine() {
     adaptationScore: number;
     notes: string[];
     mutation?: {
-      trait: string;
-      from: string;
-      to: string;
+      trait: keyof OrganismTraits;
+      oldValue: string;
+      newValue: string;
     };
   }>>([]);
 
   useEffect(() => {
     const simulateGeneration = async () => {
-      if (isSimulating && currentGeneration <= 5) {
+      if (isSimulating && currentGeneration <= 5 && selectedBiome) {
         // Simulate mutation (10-15% chance)
         const mutation = Math.random() < 0.12; // 12% chance
         const mutatedTraits = { ...traits };
@@ -107,14 +108,14 @@ export default function EvolutionEngine() {
           mutatedTraits[randomTrait] = newValue;
           mutationResult = {
             trait: randomTrait,
-            from: oldValue,
-            to: newValue,
+            oldValue: oldValue,
+            newValue: newValue,
           };
         }
 
         const result = calculateFitness({
           traits: mutatedTraits,
-          biome: selectedBiome,
+          biome: selectedBiome as Biome,
           generation: currentGeneration,
           mutation,
         });
