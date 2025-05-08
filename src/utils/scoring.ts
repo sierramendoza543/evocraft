@@ -277,7 +277,9 @@ export function calculateFitness(input: EvolutionInput): EvolutionResult {
   
   (Object.entries(traits) as [keyof OrganismTraits, string][]).forEach(([trait, value]) => {
     const compatibility = traitCompatibility[trait]?.[biome]?.[value] ?? "Unknown";
-    const score = biomeTraitScores[biome][trait][value] || 50;
+    const score = compatibility === "Excellent" ? 100 :
+                 compatibility === "Good" ? 75 :
+                 compatibility === "Poor" ? 40 : 25;
     traitScores[trait] = score;
     adaptationScore += score;
   });

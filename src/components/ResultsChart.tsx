@@ -2,8 +2,6 @@
 
 import { motion } from 'framer-motion';
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -11,7 +9,8 @@ import {
   ResponsiveContainer,
   Line,
   ComposedChart,
-  Cell
+  Cell,
+  Bar
 } from 'recharts';
 import { useOrganismStore } from '@/store/useOrganismStore';
 
